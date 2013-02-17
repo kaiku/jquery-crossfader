@@ -35,18 +35,23 @@
                 this.log('Please set the "backgrounds" option');
                 return false;
             };
+            
+            // Set the transition times
+            var transitionTime = options.fadeDuration / 1000;
+            var durations = {
+                '-webkit-transition-duration': transitionTime + 's',
+                '-ms-transition-duration': transitionTime + 's',
+                '-moz-transition-duration': transitionTime + 's',
+                '-o-transition-duration': transitionTime + 's',
+                'transition-duration': transitionTime + 's'
+            };
         
             // Build an overlay
-            var bottomOverlay = this.buildElement('div', {'class': 'bg-overlay'}, {'z-index': options.zIndex});
-            var topOverlay = this.buildElement('div', {'class': 'bg-overlay'}, {'z-index': options.zIndex + 1});
+            var bottomOverlay = this.buildElement('div', {'class': 'bg-overlay'}, $.extend({'z-index': options.zIndex}, durations));
+            var topOverlay = this.buildElement('div', {'class': 'bg-overlay'}, $.extend({'z-index': options.zIndex + 1}, durations));
             
-            overlays.push(bottomOverlay);
-            overlays.push(topOverlay);
-            
-            // Add to the DOM
-            for (var i in overlays) {
-                $('body').prepend(overlays[i]);
-            };
+            overlays = [bottomOverlay, topOverlay];
+            $('body').prepend(overlays);
             
             // Start immediately
             this.crossfadeOverlays();
@@ -87,27 +92,10 @@
             };
             
             this.loadCurrentImageInQueue(function(src) {
-                // Set the background image
-                $(overlays[1]).css('background-image', 'url(' + src + ')');
-            
-                // Fade out the last element in overlays
-                $(overlays[1]).fadeIn(options.fadeDuration, function() {
-                    // Swap the z-indexes
-                    var myZ = $(this).css('z-index');
-                    var otherZ = overlays[0].css('z-index');
-                    $(this).css('z-index', otherZ);
-                    $(overlays[0]).css('z-index', myZ);
-                    
-                    // `This` is now behind so we can show it in preparation
-                    // for the next cycle. Reverse the overlays array to loop.
-                    $(overlays[0]).hide();
-                    overlays.reverse();
-                });
+                $(overlays[0]).removeClass('showing').addClass('prepping');
+                $(overlays[1]).css('background-image', 'url(' + src + ')').removeClass('prepping').addClass('showing');
+                overlays.reverse();
                 
-                // Preload the next image
-                self.loadCurrentImageInQueue();
-                
-                // Repeat
                 timeoutId = setTimeout(function() {
                     self.crossfadeOverlays();
                 }, options.interval);

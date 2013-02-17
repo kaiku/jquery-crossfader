@@ -8,5 +8,25 @@ body > .bg-overlay {
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
-    display: none;
+    opacity: 0;
+    -moz-opacity: 0;
+    -webkit-opacity: 0;
+    -webkit-transition: opacity 3s ease;
+    -ms-transition: opacity 3s ease;
+    -moz-transition: opacity 3s ease;
+    -o-transition: opacity 3s ease;
+    transition: opacity 3s ease;
+}
+
+body > .bg-overlay.showing {
+    opacity: 1;
+    -moz-opacity: 1;
+    -webkit-opacity: 1;
+    z-index: -10;
+}
+
+body > .bg-overlay.prepping {
+    z-index: -9;
+    background-image: none;
+    opacity: 0;
 }
