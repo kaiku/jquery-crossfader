@@ -26,6 +26,10 @@ Only the `backgrounds` array is required.
 
 `zIndex` sets the largest z-index that will be used for the two overlays.
 
+To stop the crossfading at any point, just do:
+
+    jqcf.stop();
+
 Features
 --------
 *  Preloads the next image immediately after fade in.
